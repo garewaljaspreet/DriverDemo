@@ -1,0 +1,313 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.developers.uberanimation.MapsActivity" />
+
+    <ImageView
+        android:id="@+id/imgCenterPin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:background="@drawable/client_pin_centered"/>
+
+
+
+    <RelativeLayout
+        android:id="@+id/rlSelectMain"
+        android:layout_width="match_parent"
+        android:background="@drawable/selector"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:id="@+id/rlCurrentLocation"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp">
+
+            <ImageView
+                android:id="@+id/imgPickUpSqare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/desitnation_square" />
+
+            <com.example.navde.demodriver.CustomTextView
+                android:id="@+id/txtCurrentLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:maxLines="1"
+                android:layout_toLeftOf="@+id/btnPick"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/imgPickUpSqare"
+                android:text="Online"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/btnPick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/rlCurrentLocation"
+            android:layout_marginBottom="22dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp"
+            android:background="#eaeaea" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlNavigate"
+        android:background="#008000"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        >
+    <com.example.navde.demodriver.CustomTextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:textColor="#ffffff"
+        android:textSize="14sp"
+        android:text="Destination:"/>
+
+        <com.example.navde.demodriver.CustomTextView
+            android:id="@+id/txtAdd1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/txtTitle"
+            android:layout_marginTop="5dp"
+            android:textColor="#ffffff"
+            android:textSize="21sp"
+            android:text="Vancouver Aqarium"/>
+
+        <com.example.navde.demodriver.CustomTextView
+            android:id="@+id/txtAdd2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/txtAdd1"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:text="Vancouver, BC"/>
+
+        <RelativeLayout
+            android:id="@+id/rlNav"
+            android:layout_width="100dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical"
+            android:layout_alignParentEnd="true"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgNav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/icon_navigate"/>
+            <com.example.navde.demodriver.CustomTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textSize="16sp"
+                android:layout_marginTop="5dp"
+                android:text="Navigate"
+                android:textColor="#ffffff"
+                android:layout_below="@+id/imgNav"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:layout_marginBottom="15dp"
+            android:layout_toLeftOf="@+id/rlNav"
+            />
+        </RelativeLayout>
+
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/rlTop"
+        android:background="#303F9F"
+        android:paddingTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <com.example.navde.demodriver.CustomTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Trip Available"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:textSize="18sp"
+            android:textColor="#ffffff"/>
+
+        <com.example.navde.demodriver.CustomTextView
+            android:id="@+id/txtSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:text="Skip"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textColor="#ffffff"/>
+
+        <com.example.navde.demodriver.CustomTextView
+            android:id="@+id/txtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 minutes away"
+            android:layout_below="@+id/txtSkip"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:textSize="24sp"
+            android:textColor="#ffffff"/>
+
+        <com.example.navde.demodriver.CustomTextView
+            android:id="@+id/txtAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="300 W Street"
+            android:layout_below="@+id/txtime"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"
+            android:textSize="16sp"
+            android:textColor="#ffffff"/>
+
+        <ImageView
+            android:id="@+id/imgRate"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/txtAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/badge"/>
+
+        <ProgressBar
+            android:id="@+id/customProgressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@+id/imgRate"
+            android:layout_centerHorizontal="true"
+            android:progressDrawable="@drawable/background_extended"/>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_alignParentBottom="true">
+
+            <RelativeLayout
+                android:id="@+id/rlButtonLay"
+                android:layout_marginBottom="14dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+               >
+
+                <ImageView
+                    android:id="@+id/imgDriver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:background="@drawable/rideshare_icon_on"/>
+
+                <ImageView
+                    android:id="@+id/imgText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/imgCall"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/text_button" />
+
+                <ImageView
+                    android:id="@+id/imgCall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/call_button" />
+
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/viewGrey"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@+id/rlButtonLay"
+                android:layout_marginTop="14dp"
+                android:background="#eaeaea"></View>
+
+            <RelativeLayout
+                android:id="@+id/rlpriceInfo"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@+id/viewGrey"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_border">
+
+                <com.example.navde.demodriver.CustomTextView
+                    android:id="@+id/txtRequestRide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="24dp"
+                    android:text="Request Rideshare"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</RelativeLayout>

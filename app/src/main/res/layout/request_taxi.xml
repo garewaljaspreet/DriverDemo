@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rlMainRequestTaxiLay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:behavior_hideable="true"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    </RelativeLayout>
+<!--
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rlMainRequestTaxiLay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:behavior_hideable="true"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/selector">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <RelativeLayout
+                android:id="@+id/rlLocationTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp">
+
+                <RelativeLayout
+                    android:layout_width="2dp"
+                    android:layout_height="48dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/trip_connector"
+                    android:visibility="visible"
+
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/desitnation_square" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:src="@drawable/desitnation_square" />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlCurrentLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="24dp">
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtCurrentLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:text="Current Location"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlLocationName"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_below="@+id/rlCurrentLocation"
+                    android:layout_marginRight="24dp">
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtLocationName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:text="Morgan Crossing"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlButtonLay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlLocationTextView">
+
+
+                <ImageView
+                    android:id="@+id/imgTaxi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="48dp"
+                    android:background="@drawable/taxi_icon_off" />
+
+                <ImageView
+                    android:id="@+id/imgMyCar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginRight="48dp"
+                    android:background="@drawable/chauffeur_grey" />
+
+
+                <ImageView
+                    android:id="@+id/imgRideshare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/rideshare_icon_off" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlTextViewLay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlButtonLay"
+                android:layout_marginLeft="48dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginTop="5dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true">
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtTaxi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="Taxi"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:textStyle="normal" />
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtTimeTaxi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtTaxi"
+                        android:layout_centerHorizontal="true"
+                        android:text="4 min away"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        android:textStyle="normal" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true">
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtRideShare"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="Rideshare"
+                        android:textColor="#cdcdcd"
+                        android:textSize="14sp"
+                        android:textStyle="normal" />
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtTimeRideshare"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtRideShare"
+                        android:layout_centerHorizontal="true"
+                        android:text="2 Min away"
+                        android:textColor="#cdcdcd"
+                        android:textSize="12sp"
+                        android:textStyle="normal" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true">
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtMyCar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="My Car"
+                        android:textColor="#cdcdcd"
+                        android:textSize="14sp"
+                        android:textStyle="normal" />
+
+                    <com.developers.uberanimation.CustomTextView
+                        android:id="@+id/txtChooseDriver"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtMyCar"
+                        android:layout_centerHorizontal="true"
+                        android:text="Choose Driver"
+                        android:textColor="#cdcdcd"
+                        android:textSize="12sp"
+                        android:textStyle="normal" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlpriceInfo"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@+id/rlTextViewLay"
+                android:layout_marginBottom="24dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/rounded_border">
+
+                <com.developers.uberanimation.CustomTextView
+                    android:id="@+id/txtPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="24dp"
+                    android:text="$6.00"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:visibility="visible" />
+
+                <ImageView
+                    android:id="@+id/imgPartition"
+                    android:layout_width="@dimen/image_size_2dp"
+                    android:layout_height="@dimen/image_size_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:layout_toRightOf="@+id/txtPrice"
+                    android:background="@android:color/white"
+                    android:visibility="visible" />
+
+                <com.developers.uberanimation.CustomTextView
+                    android:id="@+id/txtRequestRide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="24dp"
+                    android:layout_toRightOf="@+id/imgPartition"
+                    android:text="Request Rideshare"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>-->

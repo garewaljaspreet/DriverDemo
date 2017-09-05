@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.mapbox.services.android.ui.geocoder.GeocoderAutoCompleteView
+        android:id="@+id/autoCompleteWidget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search Location"
+        android:maxLines="1"/>
+
+    <EditText
+        android:id="@+id/edText"
+        android:layout_below="@+id/autoCompleteWidget"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
+</RelativeLayout>

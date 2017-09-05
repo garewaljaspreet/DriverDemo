@@ -1,0 +1,171 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    >
+
+    <RelativeLayout
+        android:id="@+id/rlTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_centerHorizontal="true"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trip Details"
+            android:layout_centerHorizontal="true"
+            android:textSize="18sp"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:id="@+id/txtSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Done"
+            android:layout_centerHorizontal="true"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textColor="#000000"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlSelectMain"
+        android:layout_width="match_parent"
+        android:background="@drawable/selector"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlTop">
+
+        <RelativeLayout
+            android:id="@+id/rlCurrentLocation"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp">
+
+            <ImageView
+                android:id="@+id/imgPickUpSqare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/pickup_square" />
+
+            <EditText
+                android:id="@+id/edCurrent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:maxLines="1"
+                android:layout_toLeftOf="@+id/rlPick"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/imgPickUpSqare"
+                android:hint="Current Location"
+                android:textColorHint="#000000"
+                android:background="#00000000"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                 />
+
+            <RelativeLayout
+                android:id="@+id/rlPick"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
+
+                <ImageView
+                    android:id="@+id/btnPick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/close_icon" />
+                </RelativeLayout>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlDestLoc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:visibility="visible"
+            android:layout_below="@+id/rlCurrentLocation"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp">
+
+            <ImageView
+                android:id="@+id/imgDestinationSqare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/desitnation_square" />
+
+            <EditText
+                android:id="@+id/edDest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:maxLines="1"
+                android:layout_toLeftOf="@+id/rlPickDest"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/imgDestinationSqare"
+                android:hint="Enter Destination"
+                android:textColorHint="#000000"
+                android:background="#00000000"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                />
+
+            <RelativeLayout
+                android:id="@+id/rlPickDest"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
+
+                <ImageView
+                    android:id="@+id/btnPickDest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/close_icon" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/rlDestLoc"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp"
+            android:background="#eaeaea" />
+    </RelativeLayout>
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_below="@+id/rlSelectMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>

@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">UberAnimation</string>
+    <string name="title_activity_maps">UberAnimation</string>
+    <!-- TODO:Add your Google Maps Directions API key here in the value of name google_directions_key-->
+    <string name="google_directions_key">Your directions key here</string>
+    <string name="access_token">pk.eyJ1IjoibmF2ZGVlcGciLCJhIjoiY2o2eHdzOHBnMDF4NTJ4cWs1bnY1ZTBrdSJ9.y1wbuTq8UhWUALgTwixh4g</string>
+
+    <string name="no_geocoder_available">No geocoder available</string>
+    <string name="fetch_address">Fetch address</string>
+    <string name="address_found">Address found</string>
+    <string name="no_address_found">Sorry, no address found</string>
+    <string name="no_location_data_provided">No location data provided</string>
+    <string name="service_not_available">Sorry, the service is not available</string>
+    <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
+    <string name="map_title_city">City</string>
+    <string name="map_title_country">Canada</string>
+    <string name="map_title_province">BC</string>
+    <string name="map_title_postcode">Postal Code</string>
+    <string name="map_hint_street1">Street 1</string>
+    <string name="map_hint_street2">Street 2</string>
+    <string name="map_title_search">Search</string>
+    <string name="map_title_pin">PIN LOCATION</string>
+
+    **********LOCATION KEYS**********
+    <string name="loc_lat_lastsaved">LASTSAVED_LAT</string>
+    <string name="loc_lng_lastsaved">LASTSAVED_LNG</string>
+</resources>

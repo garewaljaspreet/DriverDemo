@@ -1,12 +1,15 @@
 package com.example.navde.demodriver;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -21,6 +24,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
@@ -29,11 +33,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.navde.demodriver.event.Events;
+import com.example.navde.demodriver.event.GlobalBus;
 import com.example.navde.demodriver.models.BeansPickAddress;
 import com.example.navde.demodriver.models.DirectionResults;
 import com.example.navde.demodriver.models.Route;
 import com.example.navde.demodriver.models.Steps;
 import com.example.navde.demodriver.network.NetworkService;
+import com.example.navde.demodriver.service.ChatterBoxService;
 import com.example.navde.demodriver.service.DefaultChatterBoxCallback;
 import com.example.navde.demodriver.service.binder.ChatterBoxClient;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,6 +64,9 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private static final String TAG = MapsActivity.class.getSimpleName();
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
-
+    RelativeLayout rlBottomMain,rlBottomClientDash,rlTop,rlNavigate,rlpriceInfo,rlRating;
     CustomTextView txtCurrentLocation;
     RelativeLayout rlCurrentLocation,rlSelectMain;
     private List<LatLng> polyLineList;
@@ -80,14 +90,17 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     SwitchCompat btnPick;
     private BeansPickAddress locationObj,oldLocationObj;
     private ChatterBoxClient chatterBoxServiceClient;       //To access service methods
+    int APP_STATE=0;
     private float v;
     BeansAPNS beansAPNS;
     int progressBarStatus=0;
     private double driverLat=49.035231,driverLng=-122.795683;
     LatLng startPostion,endPosition;
     LatLng startLat,startLng,endLat,endLng;
+    BeansMessage beansMessage;
     boolean IsStartSet=false,IsEndSet=false;
     Resources resources;
+    CustomTextView txtRequestRide;
     private GoogleApiClient mGoogleApiClient;//Provides the entry point to Google Play services.
     private Handler handler;
     private Runnable progressUpdater;
@@ -126,6 +139,13 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     };
 
     @Override
+    protected void onDestroy() {
+        GlobalBus.getBus().unregister(this);
+        unbindService(serviceConnection);
+        super.onDestroy();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         if(mGoogleApiClient!=null)
@@ -146,6 +166,10 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        GlobalBus.getBus().register(this);
+        Intent intent = new Intent(this, ChatterBoxService.class); //Bind service for Pubnub
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
         resources=getResources();
         mResultReceiver = new AddressResultReceiver(new Handler());
         mLocationRequest = LocationRequest.create()
@@ -163,7 +187,15 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         customProgressBar= (ProgressBar) findViewById(R.id.customProgressBar);
         btnPick= (SwitchCompat) findViewById(R.id.btnPick);
         rlSelectMain= (RelativeLayout) findViewById(R.id.rlSelectMain);
+        txtRequestRide= (CustomTextView) findViewById(R.id.txtRequestRide);
+        rlBottomClientDash= (RelativeLayout) findViewById(R.id.rlBottomClientDash);
+        rlBottomMain= (RelativeLayout) findViewById(R.id.rlBottomMain);
+        rlRating= (RelativeLayout) findViewById(R.id.rlRating);
+        rlTop= (RelativeLayout) findViewById(R.id.rlTop);
+        rlNavigate= (RelativeLayout) findViewById(R.id.rlNavigate);
         rlCurrentLocation= (RelativeLayout) findViewById(R.id.rlCurrentLocation);
+        rlpriceInfo= (RelativeLayout) findViewById(R.id.rlpriceInfo);
+        rlpriceInfo.setOnClickListener(this);
         txtCurrentLocation= (CustomTextView) findViewById(R.id.txtCurrentLocation);
         txtCurrentLocation.setOnClickListener(this);
         mapFragment.getMapAsync(MapsActivity.this);
@@ -328,6 +360,125 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 startActivityForResult(intent,1);
                 break;
 
+            case R.id.rlpriceInfo:
+
+                if(APP_STATE==1)
+                {
+
+                    APP_STATE=2;
+                    changeViewState(2);
+                    startPostion=new LatLng(sydney.latitude,sydney.longitude);
+                    endPosition=new LatLng(beansMessage.lat,beansMessage.lng);
+                    BeansMessage beansMessage=new BeansMessage();
+                    beansMessage.setLat(startPostion.latitude);
+                    beansMessage.setLng(startPostion.longitude);
+                    beansMessage.setMessage("DriverFound");
+                    beansMessage.setType("Driver");
+                    chatterBoxServiceClient.publishHybrid("",beansMessage);
+                    mMap.addMarker(new MarkerOptions().position(endPosition)
+                        .flat(true)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.client_pin_centered)));
+                    showPolyAnim(startPostion.latitude,startPostion.longitude,endPosition.latitude,endPosition.longitude);
+                }
+                else if(APP_STATE==4)
+                {
+                    rlSelectMain.setVisibility(View.GONE);
+                    rlBottomMain.setVisibility(View.VISIBLE);
+                    rlBottomClientDash.setVisibility(View.VISIBLE);
+                    rlNavigate.setBackgroundColor(resources.getColor(R.color.colorGreen));
+                    txtRequestRide.setText("Start Trip");
+                    rlpriceInfo.setVisibility(View.GONE);
+                    rlTop.setVisibility(View.GONE);
+                    rlNavigate.setVisibility(View.VISIBLE);
+                    mMap.clear();
+                    mMap.addMarker(new MarkerOptions().position(endPosition)
+                            .flat(true)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(beansMessage.getLat(),beansMessage.getLng()))
+                            .flat(true)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.client_pin_centered)));
+                    startPostion=endPosition;
+                    endPosition=new LatLng(beansMessage.getLat(),beansMessage.getLng());
+                    showPolyAnim(startPostion.latitude,startPostion.longitude,beansMessage.getLat(),beansMessage.getLng());
+                    BeansMessage beansMessage=new BeansMessage();
+                    beansMessage.setLat(startPostion.latitude);
+                    beansMessage.setLng(startPostion.longitude);
+                    beansMessage.setMessage("TripStarted");
+                    beansMessage.setType("Driver");
+                    chatterBoxServiceClient.publishHybrid("",beansMessage);
+                }
+                else if(APP_STATE==5)
+                {
+                    rlSelectMain.setVisibility(View.GONE);
+                    rlBottomMain.setVisibility(View.GONE);
+                    rlBottomClientDash.setVisibility(View.GONE);
+                    rlpriceInfo.setVisibility(View.GONE);
+                    rlTop.setVisibility(View.GONE);
+                    rlNavigate.setVisibility(View.GONE);
+                    rlRating.setVisibility(View.VISIBLE);
+                    mMap.clear();
+                    mMap.addMarker(new MarkerOptions().position(endPosition)
+                            .flat(true)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
+                    BeansMessage beansMessage=new BeansMessage();
+                    beansMessage.setLat(startPostion.latitude);
+                    beansMessage.setLng(startPostion.longitude);
+                    beansMessage.setMessage("TripCompleted");
+                    beansMessage.setType("Driver");
+                    chatterBoxServiceClient.publishHybrid("",beansMessage);
+                }
+        }
+    }
+
+    private void changeViewState(int state)
+    {
+        if(state==1)
+        {
+            rlSelectMain.setVisibility(View.GONE);
+            rlBottomMain.setVisibility(View.VISIBLE);
+            rlBottomClientDash.setVisibility(View.GONE);
+            rlpriceInfo.setBackgroundColor(resources.getColor(R.color.colorGreen));
+            txtRequestRide.setText("Accept Trip");
+            rlTop.setVisibility(View.VISIBLE);
+            Drawable drawable = resources.getDrawable(R.drawable.background_extended);
+            customProgressBar.setMax(50000); // Maximum Progress
+            customProgressBar.setProgress(100);
+            customProgressBar.setProgressDrawable(drawable);
+            setProgressAnimate(customProgressBar,500);
+
+        }
+        else if(state==2)
+        {
+            rlSelectMain.setVisibility(View.GONE);
+            rlBottomMain.setVisibility(View.VISIBLE);
+            rlBottomClientDash.setVisibility(View.VISIBLE);
+            rlpriceInfo.setVisibility(View.GONE);
+            rlTop.setVisibility(View.GONE);
+            rlNavigate.setVisibility(View.VISIBLE);
+
+        }
+        else if(state==4)
+        {
+            rlSelectMain.setVisibility(View.GONE);
+            rlBottomMain.setVisibility(View.VISIBLE);
+            rlBottomClientDash.setVisibility(View.VISIBLE);
+            rlpriceInfo.setBackgroundColor(resources.getColor(R.color.colorGreen));
+            txtRequestRide.setText("Start Trip");
+            rlpriceInfo.setVisibility(View.VISIBLE);
+            rlTop.setVisibility(View.GONE);
+            rlNavigate.setVisibility(View.VISIBLE);
+
+        }
+        else if(state==5)
+        {
+            rlSelectMain.setVisibility(View.GONE);
+            rlBottomMain.setVisibility(View.VISIBLE);
+            rlBottomClientDash.setVisibility(View.VISIBLE);
+            rlpriceInfo.setBackgroundColor(resources.getColor(R.color.colorGreen));
+            txtRequestRide.setText("Complete Trip");
+            rlpriceInfo.setVisibility(View.VISIBLE);
+            rlTop.setVisibility(View.GONE);
+            rlNavigate.setVisibility(View.VISIBLE);
 
         }
     }
@@ -339,6 +490,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     {
         if(chatterBoxServiceClient!=null)
         {
+            chatterBoxServiceClient.subscribeChat("");
             chatterBoxServiceClient.initListener(chatListener);
         }
 
@@ -353,11 +505,63 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         @Override
         public void onMessage(BeansMessage message) {
             super.onMessage(message);
+            Log.e("Oyeeee","callback");
+            if(message.getMessage().equals("FindDriver"))
+            {
 
-            Log.e("Message","AYA"+message.getMessage());
+                GlobalBus.getBus().post(new Events("FindDriver",message,null));
+
+            }
+            else if(message.getMessage().equals("StartTrip"))
+            {
+                GlobalBus.getBus().post(new Events("StartTrip",message,null));
+            }
+            else if(message.getMessage().equals("CompleteTrip"))
+            {
+                GlobalBus.getBus().post(new Events("CompleteTrip",message,null));
+            }
 
         }
     };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(Events eventInfo) {
+        if(eventInfo.getEventType().equals("FindDriver"))
+        {
+            beansMessage=eventInfo.getMessage();
+            APP_STATE=1;
+           changeViewState(1);
+        }
+        else if(eventInfo.getEventType().equals("StartTrip"))
+        {
+            beansMessage=eventInfo.getMessage();
+            APP_STATE=4;
+            changeViewState(4);
+        }
+        else if(eventInfo.getEventType().equals("CompleteTrip"))
+        {
+            beansMessage=eventInfo.getMessage();
+            APP_STATE=5;
+            changeViewState(5);
+        }
+    }
+
+    private void showPolyAnim(double startLat,double startLong,double endLat,double endLng)
+    {
+        LatLngBounds.Builder b = new LatLngBounds.Builder();
+        b.include(new LatLng(startLat,startLong));
+        b.include(new LatLng(endLat,endLng));
+        LatLngBounds bounds = b.build();
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels - getResources().getDisplayMetrics().heightPixels / 2;
+        int padding = (int) (width * 0.10);
+        //Change the padding as per needed
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+        mMap.animateCamera(cu);
+        service.changeApiBaseUrl("http://maps.googleapis.com");
+        presenter.getDirection(startLat+","+startLong,endLat+","+endLng);
+    }
+
     private void initView()
     {
         rlSelectMain.setVisibility(View.VISIBLE);
@@ -516,42 +720,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         return (result + 360) % 360;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==2)
-        {
-            rlSelectMain.setVisibility(View.GONE);
-            beansAPNS=data.getParcelableExtra("addressInfo");
-            Log.e("STRATRT",beansAPNS.getStartLatitude()+"   "+beansAPNS.getStartLongitude());
-            Marker markerStart = mMap.addMarker(new MarkerOptions().position(new LatLng(beansAPNS.getStartLatitude(),beansAPNS.getStartLongitude()))
-                    .flat(true)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.client_pin_centered)));
-            Marker markerend = mMap.addMarker(new MarkerOptions().position(new LatLng(beansAPNS.getEndLatitude(),beansAPNS.getEndLongitude()))
-                    .flat(true)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination_flag)));
-            startPostion=new LatLng(beansAPNS.getStartLatitude(),beansAPNS.getStartLongitude());
-            endPosition=new LatLng(beansAPNS.getEndLatitude(),beansAPNS.getEndLongitude());
-            showPolyAnim(beansAPNS.getStartLatitude(),beansAPNS.getStartLongitude(),beansAPNS.getEndLatitude(),beansAPNS.getEndLongitude());
-        }
 
-    }
-
-    private void showPolyAnim(double startLat,double startLong,double endLat,double endLng)
-    {
-        LatLngBounds.Builder b = new LatLngBounds.Builder();
-        b.include(new LatLng(startLat,startLong));
-        b.include(new LatLng(endLat,endLng));
-        LatLngBounds bounds = b.build();
-        int width = getResources().getDisplayMetrics().widthPixels;
-        int height = getResources().getDisplayMetrics().heightPixels - getResources().getDisplayMetrics().heightPixels / 2;
-        int padding = (int) (width * 0.10);
-        //Change the padding as per needed
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-        mMap.animateCamera(cu);
-        service.changeApiBaseUrl("http://maps.googleapis.com");
-        presenter.getDirection(startLat+","+startLong,endLat+","+endLng);
-    }
 
     private void startAnim(ArrayList<LatLng> routelist){
         if(mMap != null) {
@@ -629,48 +798,15 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
     }
 
-    private void startAnim()
+    private void setProgressAnimate(ProgressBar pb, int progressTo)
     {
-        /*new Thread(new Runnable() {
-            public void run() {
-                while (progressBarStatus < 100) {
 
-                    // process some tasks
-                    progressBarStatus = doSomeTasks();
-
-                    // your computer is too fast, sleep 1 second
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    // Update the progress bar
-                    progressBarHandler.post(new Runnable() {
-                        public void run() {
-                            progressBar.setProgress(progressBarStatus);
-                        }
-                    });
-                }
-
-                // ok, file is downloaded,
-                if (progressBarStatus >= 100) {
-
-                    // sleep 2 seconds, so that you can see the 100%
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    // close the progress bar dialog
-                    customProgressBar.dismiss();
-                }
-            }
-        }).start();
-*/
-
+        ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", pb.getProgress(), progressTo * 100);
+        animation.setDuration(5000);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.start();
     }
+
     /**
      * Runs when a GoogleApiClient object successfully connects.
      */
@@ -823,25 +959,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         buildGoogleApiClient();
 
 
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 
-            @Override
-            public void onCameraChange(CameraPosition arg0) {
-                if (IS_ADDRESS_SEARCHED == false)
-                    if(!IsStartSet)
-                    {
-                        startPostion=arg0.target;
-
-                    }
-                    else if(!IsEndSet)
-                    {
-                        endPosition=arg0.target;
-                    }
-                startIntentService(arg0.target, null);
-
-                IS_ADDRESS_SEARCHED = false;
-            }
-        });
     }
 
     /**

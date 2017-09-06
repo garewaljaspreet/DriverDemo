@@ -34,6 +34,11 @@
             android:value="AIzaSyByFtuOWjHcffaPQXiEx0Z5CXy2SavMukQ" />
 
         <service
+            android:name=".service.ChatterBoxService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
             android:name=".FetchAddressIntentService"
             android:exported="false" />
 

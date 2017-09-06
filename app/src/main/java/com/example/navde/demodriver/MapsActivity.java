@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -23,8 +26,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -87,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private ChatterBoxClient chatterBoxServiceClient;       //To access service methods
     int APP_STATE=0;
     private float v;
+    private double polyStartLat, polyStartLng,polyEndLat,polyEndLng;
     BeansAPNS beansAPNS;
     int progressBarStatus=0;
     private double driverLat=49.035231,driverLng=-122.795683;
@@ -103,6 +109,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private LatLng startPosition1,startPosition2, startPosition3,startPosition4,startPosition5;
     private int index, next;
     private LatLng sydney;
+    RatingBar ratingBar;
     private Button button;
     String url1="49.03475205301813,-122.80113101005554|49.03475205301813,-122.80068039894104|49.03444959709725,-122.80039072036743|49.03401349462516,-122.80037999153137|49.03384467973859,-122.8006911277771|49.03408383399211,-122.80110955238342|49.03458324063788,-122.80110955238342";
     String url2="49.03506857468707,-122.80115246772766|49.03587745424663,-122.80116319656372|49.03655971634473,-122.80116319656372|49.03655971634473,-122.80261158943176|49.03638387649291,-122.80413508415222|49.03574381418296,-122.80401706695557|49.03488569574625,-122.80338406562805|49.034745019180384,-122.80247211456299|49.03475205301813,-122.80115246772766";
@@ -193,19 +200,47 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         rlpriceInfo.setOnClickListener(this);
         txtCurrentLocation= (CustomTextView) findViewById(R.id.txtCurrentLocation);
         txtCurrentLocation.setOnClickListener(this);
+        ratingBar=(RatingBar) findViewById(R.id.ratingBar);
+        LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
+        stars.getDrawable(2).setColorFilter(Color.parseColor("#05AA63"), PorterDuff.Mode.SRC_ATOP);
+        stars.getDrawable(0).setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
+
+        ratingBar.setRating(Float.parseFloat("5.0"));
         mapFragment.getMapAsync(MapsActivity.this);
 
-        btnPick.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnPick.setChecked(true);
 
-                mMap.addMarker(new MarkerOptions().position(new LatLng(startPostion.latitude,startPostion.longitude))
-                        .flat(true)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.client_pin_centered)));
-                imgCenterPin.setBackgroundResource(R.drawable.destination_flag);
-                IsStartSet=true;
-            }
-        });
+       btnPick.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+           @Override
+           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               if(isChecked)
+               {
+                   txtCurrentLocation.setText("Online");
+                   mMap.clear();
+                   marker4 = mMap.addMarker(new MarkerOptions().position(sydney)
+                           .flat(true)
+                           .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
+                   marker4.setAnchor(0.5f, 0.5f);
+                   mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
+                           .target(sydney)
+                           .zoom(17)
+                           .build()));
+               }
+               else
+               {
+                   txtCurrentLocation.setText("Offline");
+                   mMap.clear();
+                   marker4 = mMap.addMarker(new MarkerOptions().position(sydney)
+                           .flat(true)
+                           .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_off)));
+                   marker4.setAnchor(0.5f, 0.5f);
+                   mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
+                           .target(sydney)
+                           .zoom(17)
+                           .build()));
+               }
+           }
+       });
 
 
     }
@@ -245,7 +280,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     mMap.addMarker(new MarkerOptions().position(endPosition)
                         .flat(true)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.client_pin_centered)));
-                    showPolyAnim(startPostion.latitude,startPostion.longitude,endPosition.latitude,endPosition.longitude);
+                    setPolyInfo(startPostion.latitude,startPostion.longitude,endPosition.latitude,endPosition.longitude);
                 }
                 else if(APP_STATE==4)
                 {
@@ -258,18 +293,20 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     rlTop.setVisibility(View.GONE);
                     rlNavigate.setVisibility(View.VISIBLE);
                     mMap.clear();
-                    mMap.addMarker(new MarkerOptions().position(endPosition)
+
+                    startPostion=endPosition;
+                    endPosition=new LatLng(beansMessage.getUserDestLat(),beansMessage.getUserDestLng());
+                    mMap.addMarker(new MarkerOptions().position(startPostion)
                             .flat(true)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(beansMessage.getUserStartLat(),beansMessage.getUserStartLng()))
+                    mMap.addMarker(new MarkerOptions().position(endPosition)
                             .flat(true)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.client_pin_centered)));
-                    startPostion=endPosition;
-                    endPosition=new LatLng(beansMessage.getUserStartLat(),beansMessage.getUserStartLng());
-                    showPolyAnim(startPostion.latitude,startPostion.longitude,beansMessage.getUserStartLat(),beansMessage.getUserStartLng());
+                    setPolyInfo(startPostion.latitude,startPostion.longitude,endPosition.latitude,endPosition.longitude);
+
                     BeansMessage beanMessage=new BeansMessage();
-                    beanMessage.setDrivarLat(sydney.latitude);
-                    beanMessage.setDriverLng(sydney.longitude);
+                    beanMessage.setDrivarLat(startPostion.latitude);
+                    beanMessage.setDriverLng(startPostion.longitude);
                     beanMessage.setUserStartLat(beansMessage.getUserStartLat());
                     beanMessage.setUserDestLng(beansMessage.getUserStartLng());
                     beanMessage.setUserDestLat(beansMessage.getUserDestLat());
@@ -421,6 +458,15 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+    private void setPolyInfo(double polyStartLat,double polyStartLng,double polyEndLat,double polyEndLng)
+    {
+        this.polyStartLat=polyStartLat;
+        this.polyStartLng=polyStartLng;
+        this.polyEndLat=polyEndLat;
+        this.polyEndLng=polyEndLng;
+        showPolyAnim(polyStartLat,polyStartLng,polyEndLat,polyStartLng);
+    }
+
     private void showPolyAnim(double startLat,double startLong,double endLat,double endLng)
     {
         LatLngBounds.Builder b = new LatLngBounds.Builder();
@@ -458,7 +504,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     protected void onDirectionResult(DirectionResults directionResults)
     {
         ArrayList<LatLng> routelist = new ArrayList<LatLng>();
-        routelist.add(startPostion);
+       // routelist.add(startPostion);
         if(directionResults.getRoutes().size()>0){
             List<LatLng> decodelist;
             Route routeA = directionResults.getRoutes().get(0);
@@ -484,7 +530,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             }
         }
 
-        routelist.add(endPosition);
+       // routelist.add(endPosition);
         startAnim(routelist);
     }
 

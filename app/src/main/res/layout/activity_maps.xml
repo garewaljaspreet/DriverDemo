@@ -64,6 +64,7 @@
                 android:id="@+id/btnPick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:theme="@style/SCBSwitch"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"/>
         </RelativeLayout>
@@ -352,25 +353,36 @@
             android:layout_marginTop="14dp">
 
             <RatingBar
+                android:id="@+id/ratingBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                style="?android:attr/ratingBarStyle"
+                android:stepSize="1"
                 android:numStars="5" />
 
 
 
         </RelativeLayout>
 
-        <Button
+        <RelativeLayout
+            android:id="@+id/rlRatingSubmit"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_below="@+id/rlRaitngStarLay"
             android:layout_marginBottom="24dp"
-            android:background="#eaeaea"
-            android:text="Submit Rating"
-            android:textColor="#5d5d5d">
+            android:background="@drawable/rounded_border_green"
+            >
 
-
-        </Button>
+            <com.example.navde.demodriver.CustomTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="Submit Rating"
+                android:textColor="#ffffff"/>
+        </RelativeLayout>
     </RelativeLayout>
+
 </RelativeLayout>

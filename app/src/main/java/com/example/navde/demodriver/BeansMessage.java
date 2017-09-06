@@ -24,24 +24,53 @@ public class BeansMessage {
 
     String message,type;
 
-    Double lat;
-
-    public Double getLat() {
-        return lat;
+    public Double getUserStartLat() {
+        return userStartLat;
     }
 
-    public void setLat(Double lat) {
-        this.lat = lat;
+    public void setUserStartLat(Double userStartLat) {
+        this.userStartLat = userStartLat;
     }
 
-    public Double getLng() {
-        return lng;
+    public Double getDriverLng() {
+        return driverLng;
     }
 
-    public void setLng(Double lng) {
-        this.lng = lng;
+    public void setDriverLng(Double driverLng) {
+        this.driverLng = driverLng;
     }
 
-    Double lng;
+    public Double getDrivarLat() {
+        return drivarLat;
+    }
+
+    public void setDrivarLat(Double drivarLat) {
+        this.drivarLat = drivarLat;
+    }
+
+    public Double getUserDestLat() {
+        return userDestLat;
+    }
+
+    public void setUserDestLat(Double userDestLat) {
+        this.userDestLat = userDestLat;
+    }
+
+    public Double getUserDestLng() {
+        return userDestLng;
+    }
+
+    public void setUserDestLng(Double userDestLng) {
+        this.userDestLng = userDestLng;
+    }
+
+    public Double getUserStartLng() {
+        return userStartLng;
+    }
+
+    public void setUserStartLng(Double userStartLng) {
+        this.userStartLng = userStartLng;
+    }
+
+    Double userStartLat,userStartLng,userDestLng,userDestLat,drivarLat,driverLng;
 }
-

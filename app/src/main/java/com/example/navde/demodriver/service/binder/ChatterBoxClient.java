@@ -46,7 +46,7 @@ public class ChatterBoxClient extends Binder {
 
         try {
             chatterBoxService.getPubNubHybrid().subscribe()
-                    .channels(Arrays.asList("TestChatNew")) // subscribe to channels
+                    .channels(Arrays.asList("TestChatNewest")) // subscribe to channels
                     .execute();
         }
         catch(Exception e)
@@ -143,7 +143,7 @@ public class ChatterBoxClient extends Binder {
         try {
             chatterBoxService.getPubNubHybrid().publish()
                     .message(chatDataObject)
-                    .channel("TestChatNew")
+                    .channel("TestChatNewest")
                     .async(new PNCallback<PNPublishResult>() {
                         @Override
                         public void onResponse(PNPublishResult result, PNStatus status) {

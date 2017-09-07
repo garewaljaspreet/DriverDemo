@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Address;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -75,9 +76,9 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private static final String TAG = MapsActivity.class.getSimpleName();
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
-    RelativeLayout rlBottomMain,rlBottomClientDash,rlTop,rlNavigate,rlpriceInfo,rlRating;
+    RelativeLayout rlBottomMain,rlBottomClientDash,rlTop,rlNavigate,rlpriceInfo,rlRating,rlNav;
     CustomTextView txtCurrentLocation;
-    RelativeLayout rlCurrentLocation,rlSelectMain;
+    RelativeLayout rlCurrentLocation,rlSelectMain,rlRatingSubmit;
     private List<LatLng> polyLineList;
     private Marker marker1,marker2,marker3,marker4,marker5;
     boolean IS_ADDRESS_SEARCHED=false;// check is address search is in process or not to avoid multiple calls
@@ -188,6 +189,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         imgCenterPin= (ImageView) findViewById(R.id.imgCenterPin);
         customProgressBar= (ProgressBar) findViewById(R.id.customProgressBar);
         btnPick= (SwitchCompat) findViewById(R.id.btnPick);
+        rlNav= (RelativeLayout) findViewById(R.id.rlNav);
+        rlNav.setOnClickListener(this);
         rlSelectMain= (RelativeLayout) findViewById(R.id.rlSelectMain);
         txtRequestRide= (CustomTextView) findViewById(R.id.txtRequestRide);
         rlBottomClientDash= (RelativeLayout) findViewById(R.id.rlBottomClientDash);
@@ -195,6 +198,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         rlRating= (RelativeLayout) findViewById(R.id.rlRating);
         rlTop= (RelativeLayout) findViewById(R.id.rlTop);
         rlNavigate= (RelativeLayout) findViewById(R.id.rlNavigate);
+        rlRatingSubmit= (RelativeLayout) findViewById(R.id.rlRatingSubmit);
+        rlRatingSubmit.setOnClickListener(this);
         rlCurrentLocation= (RelativeLayout) findViewById(R.id.rlCurrentLocation);
         rlpriceInfo= (RelativeLayout) findViewById(R.id.rlpriceInfo);
         rlpriceInfo.setOnClickListener(this);
@@ -339,6 +344,18 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     beanMessage.setType("Driver");
                     chatterBoxServiceClient.publishHybrid("",beanMessage);
                 }
+
+                break;
+            case R.id.rlRatingSubmit:
+                rlRating.setVisibility(View.GONE);
+                imgCenterPin.setVisibility(View.GONE);
+                initView();
+                break;
+
+            case R.id.rlNav:
+                navigateToMaps(polyStartLat,polyStartLng,polyEndLat,polyEndLng);
+                break;
+
         }
     }
 
@@ -458,13 +475,13 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
-    private void setPolyInfo(double polyStartLat,double polyStartLng,double polyEndLat,double polyEndLng)
+    private void setPolyInfo(double polyStartLatitude,double polyStartLong,double polyEndLatitude,double polyEndLong)
     {
-        this.polyStartLat=polyStartLat;
-        this.polyStartLng=polyStartLng;
-        this.polyEndLat=polyEndLat;
-        this.polyEndLng=polyEndLng;
-        showPolyAnim(polyStartLat,polyStartLng,polyEndLat,polyStartLng);
+        this.polyStartLat=polyStartLatitude;
+        this.polyStartLng=polyStartLong;
+        this.polyEndLat=polyEndLatitude;
+        this.polyEndLng=polyEndLong;
+        showPolyAnim(polyStartLat,polyStartLng,polyEndLat,polyEndLng);
     }
 
     private void showPolyAnim(double startLat,double startLong,double endLat,double endLng)
@@ -483,14 +500,26 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         presenter.getDirection(startLat+","+startLong,endLat+","+endLng);
     }
 
+    private void navigateToMaps(double startLat,double startLong,double endLat,double endLng)
+    {
+        String uri = "http://maps.google.com/maps?saddr=" + startLat + "," + startLong + "&daddr=" + endLat + "," + endLng;
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+        startActivity(intent);
+    }
+
     private void initView()
     {
         rlSelectMain.setVisibility(View.VISIBLE);
         mMap.clear();
-        imgCenterPin.setVisibility(View.VISIBLE);
-        imgCenterPin.setBackgroundResource(R.drawable.client_pin_centered);
-        IsStartSet=false;
-        IsEndSet=false;
+        marker4 = mMap.addMarker(new MarkerOptions().position(sydney)
+                .flat(true)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
+        marker4.setAnchor(0.5f, 0.5f);
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
+                .target(sydney)
+                .zoom(17)
+                .build()));
     }
 
     private void startAnim(ArrayList<LatLng> routelist){
@@ -500,6 +529,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             Toast.makeText(getApplicationContext(), "Map not ready", Toast.LENGTH_LONG).show();
         }
     }
+
+
 
     protected void onDirectionResult(DirectionResults directionResults)
     {
@@ -710,14 +741,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(false);
         mMap.getUiSettings().setCompassEnabled(false);
-        marker4 = mMap.addMarker(new MarkerOptions().position(sydney)
-                .flat(true)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
-        marker4.setAnchor(0.5f, 0.5f);
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-                .target(sydney)
-                .zoom(17)
-                .build()));
+        initView();
         Location location1=new Location("a");
         location1.setLongitude(49.10449219998637);
         location1.setLatitude(-122.80433737625849);

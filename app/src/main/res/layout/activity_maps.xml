@@ -333,7 +333,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/details_client_rate"
+            android:src="@drawable/details_driver_rate"
             />
 
         <View

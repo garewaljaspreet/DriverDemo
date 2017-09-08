@@ -57,10 +57,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
@@ -69,6 +73,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements View.OnClickListener,OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
@@ -366,7 +371,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             rlSelectMain.setVisibility(View.GONE);
             rlBottomMain.setVisibility(View.VISIBLE);
             rlBottomClientDash.setVisibility(View.GONE);
-            rlpriceInfo.setBackgroundColor(resources.getColor(R.color.colorGreen));
+            rlpriceInfo.setVisibility(View.VISIBLE);
+            rlpriceInfo.setBackgroundResource(R.drawable.rounded_border_green);
             txtRequestRide.setText("Accept Trip");
             rlTop.setVisibility(View.VISIBLE);
             Drawable drawable = resources.getDrawable(R.drawable.background_extended);
@@ -391,7 +397,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             rlSelectMain.setVisibility(View.GONE);
             rlBottomMain.setVisibility(View.VISIBLE);
             rlBottomClientDash.setVisibility(View.VISIBLE);
-            rlpriceInfo.setBackgroundColor(resources.getColor(R.color.colorGreen));
+            rlpriceInfo.setBackgroundResource(R.drawable.rounded_border_green);
             txtRequestRide.setText("Start Trip");
             rlpriceInfo.setVisibility(View.VISIBLE);
             rlTop.setVisibility(View.GONE);
@@ -403,7 +409,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             rlSelectMain.setVisibility(View.GONE);
             rlBottomMain.setVisibility(View.VISIBLE);
             rlBottomClientDash.setVisibility(View.VISIBLE);
-            rlpriceInfo.setBackgroundColor(resources.getColor(R.color.colorGreen));
+            rlpriceInfo.setBackgroundResource(R.drawable.rounded_border_red);
             txtRequestRide.setText("Complete Trip");
             rlpriceInfo.setVisibility(View.VISIBLE);
             rlTop.setVisibility(View.GONE);
@@ -524,10 +530,46 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
     private void startAnim(ArrayList<LatLng> routelist){
         if(mMap != null) {
-            MapAnimator.getInstance().animateRoute(mMap, routelist);
+            moveToBounds(routelist);
+            PolylineOptions polylineOptions = new PolylineOptions();
+            List<PatternItem> pattern = Arrays.<PatternItem>asList(
+                    new Dot(), new Gap(20), new Dash(30), new Gap(20));
+            // Setting the color of the polyline
+            polylineOptions.color(Color.BLACK);
+
+            polylineOptions.pattern(pattern);
+            // Setting the width of the polyline
+
+            polylineOptions.width(10);
+
+
+            // Setting points of polyline
+
+            polylineOptions.addAll(routelist);
+
+
+            // Adding the polyline to the map
+
+            mMap.addPolyline(polylineOptions);
+            //MapAnimator.getInstance().animateRoute(mMap, routelist);
         } else {
             Toast.makeText(getApplicationContext(), "Map not ready", Toast.LENGTH_LONG).show();
         }
+    }
+
+
+    private void moveToBounds(ArrayList<LatLng> routelist)
+    {
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for(int i = 0; i < routelist.size();i++){
+            builder.include(routelist.get(i));
+        }
+        LatLngBounds bounds = builder.build();
+        int padding = 200; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        mMap.animateCamera(cu);
     }
 
 

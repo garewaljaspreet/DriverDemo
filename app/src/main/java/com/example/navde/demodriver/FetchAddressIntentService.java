@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.util.Log;
@@ -168,6 +169,7 @@ public class FetchAddressIntentService extends IntentService {
      * Sends a resultCode and message to the receiver.
      */
     private void deliverResultToReceiver(int resultCode, String message,BeansPickAddress locationObj, Address address) {
+        Log.e("Address",locationObj+"@@@"+address);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
         bundle.putString(Constants.LOCATION_DATA_EXTRA_NEW, message);

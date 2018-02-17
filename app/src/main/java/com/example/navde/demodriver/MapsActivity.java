@@ -68,6 +68,10 @@ import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.mapbox.geojson.Point;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -107,7 +111,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     BeansMessage beansMessage;
     boolean IsStartSet=false,IsEndSet=false;
     Resources resources;
-    CustomTextView txtRequestRide;
+    CustomTextView txtRequestRide,txtAdd1,txtAdd2;
     private GoogleApiClient mGoogleApiClient;//Provides the entry point to Google Play services.
     private Handler handler;
     private Runnable progressUpdater;
@@ -198,6 +202,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         rlNav.setOnClickListener(this);
         rlSelectMain= (RelativeLayout) findViewById(R.id.rlSelectMain);
         txtRequestRide= (CustomTextView) findViewById(R.id.txtRequestRide);
+        txtAdd1= (CustomTextView) findViewById(R.id.txtAdd1);
+        txtAdd2= (CustomTextView) findViewById(R.id.txtAdd2);
         rlBottomClientDash= (RelativeLayout) findViewById(R.id.rlBottomClientDash);
         rlBottomMain= (RelativeLayout) findViewById(R.id.rlBottomMain);
         rlRating= (RelativeLayout) findViewById(R.id.rlRating);
@@ -358,7 +364,22 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 break;
 
             case R.id.rlNav:
-                navigateToMaps(polyStartLat,polyStartLng,polyEndLat,polyEndLng);
+               // navigateToMaps(polyStartLat,polyStartLng,polyEndLat,polyEndLng);
+                Point origin = Point.fromLngLat(startPostion.longitude, startPostion.latitude);
+                Point destination = Point.fromLngLat(endPosition.longitude, endPosition.latitude);
+                MapboxNavigation navigation = new MapboxNavigation(this, getResources().getString(R.string.access_token));
+                boolean simulateRoute = false;
+
+// Create a NavigationViewOptions object to package everything together
+                NavigationViewOptions options = NavigationViewOptions.builder()
+                        .origin(origin)
+                        .destination(destination)
+                        .awsPoolId(null)
+                        .shouldSimulateRoute(simulateRoute)
+                        .build();
+
+// Call this method with Context from within an Activity
+                NavigationLauncher.startNavigation(this, options);
                 break;
 
         }
@@ -504,6 +525,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         mMap.animateCamera(cu);
         service.changeApiBaseUrl("http://maps.googleapis.com");
         presenter.getDirection(startLat+","+startLong,endLat+","+endLng);
+        LatLng latLng=new LatLng(endLat,endLng);
+        startIntentService(latLng,mLastLocation);
     }
 
     private void navigateToMaps(double startLat,double startLong,double endLat,double endLng)
@@ -826,9 +849,10 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     if(addressObj.getAddressLine(i)!=null)
                         addressText=addressText+addressObj.getAddressLine(i)+"\n";
                 }
-                showMapData();
+               // showMapData();
             }
-
+            txtAdd1.setText(addressText);
+            //txtAdd2.setText(locationObj.getCity());
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                 //showToast(getString(R.string.address_found));

@@ -105,13 +105,13 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private double polyStartLat, polyStartLng,polyEndLat,polyEndLng;
     BeansAPNS beansAPNS;
     int progressBarStatus=0;
-    private double driverLat=49.035231,driverLng=-122.795683;
+    private double driverLat=49.0324004977263,driverLng=-122.80110754072665;
     LatLng startPostion,endPosition;
     LatLng startLat,startLng,endLat,endLng;
     BeansMessage beansMessage;
     boolean IsStartSet=false,IsEndSet=false;
     Resources resources;
-    CustomTextView txtRequestRide,txtAdd1,txtAdd2;
+    CustomTextView txtRequestRide,txtAdd1;
     private GoogleApiClient mGoogleApiClient;//Provides the entry point to Google Play services.
     private Handler handler;
     private Runnable progressUpdater;
@@ -203,7 +203,6 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         rlSelectMain= (RelativeLayout) findViewById(R.id.rlSelectMain);
         txtRequestRide= (CustomTextView) findViewById(R.id.txtRequestRide);
         txtAdd1= (CustomTextView) findViewById(R.id.txtAdd1);
-        txtAdd2= (CustomTextView) findViewById(R.id.txtAdd2);
         rlBottomClientDash= (RelativeLayout) findViewById(R.id.rlBottomClientDash);
         rlBottomMain= (RelativeLayout) findViewById(R.id.rlBottomMain);
         rlRating= (RelativeLayout) findViewById(R.id.rlRating);
@@ -224,7 +223,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         ratingBar.setRating(Float.parseFloat("5.0"));
         mapFragment.getMapAsync(MapsActivity.this);
 
-        btnPick.setChecked(true);
+        btnPick.setChecked(false);
 
        btnPick.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
            @Override
@@ -241,6 +240,16 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                            .target(sydney)
                            .zoom(17)
                            .build()));
+                   BeansMessage beanMessage=new BeansMessage();
+                   beanMessage.setDrivarLat(sydney.latitude);
+                   beanMessage.setDriverLng(sydney.longitude);
+                   beanMessage.setUserStartLat(0.0);
+                   beanMessage.setUserDestLng(0.0);
+                   beanMessage.setUserDestLat(0.0);
+                   beanMessage.setUserDestLng(0.0);
+                   beanMessage.setMessage("Available");
+                   beanMessage.setType("Driver");
+                   chatterBoxServiceClient.publishHybrid("",beanMessage);
                }
                else
                {
@@ -254,6 +263,16 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                            .target(sydney)
                            .zoom(17)
                            .build()));
+                   BeansMessage beanMessage=new BeansMessage();
+                   beanMessage.setDrivarLat(sydney.latitude);
+                   beanMessage.setDriverLng(sydney.longitude);
+                   beanMessage.setUserStartLat(0.0);
+                   beanMessage.setUserDestLng(0.0);
+                   beanMessage.setUserDestLat(0.0);
+                   beanMessage.setUserDestLng(0.0);
+                   beanMessage.setMessage("Unavailable");
+                   beanMessage.setType("Driver");
+                   chatterBoxServiceClient.publishHybrid("",beanMessage);
                }
            }
        });
@@ -312,6 +331,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
                     startPostion=endPosition;
                     endPosition=new LatLng(beansMessage.getUserDestLat(),beansMessage.getUserDestLng());
+                    startIntentService(endPosition,null);
                     mMap.addMarker(new MarkerOptions().position(startPostion)
                             .flat(true)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
@@ -364,11 +384,10 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 break;
 
             case R.id.rlNav:
-               // navigateToMaps(polyStartLat,polyStartLng,polyEndLat,polyEndLng);
                 Point origin = Point.fromLngLat(startPostion.longitude, startPostion.latitude);
                 Point destination = Point.fromLngLat(endPosition.longitude, endPosition.latitude);
                 MapboxNavigation navigation = new MapboxNavigation(this, getResources().getString(R.string.access_token));
-                boolean simulateRoute = false;
+                boolean simulateRoute = true;
 
 // Create a NavigationViewOptions object to package everything together
                 NavigationViewOptions options = NavigationViewOptions.builder()
@@ -543,7 +562,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         mMap.clear();
         marker4 = mMap.addMarker(new MarkerOptions().position(sydney)
                 .flat(true)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_on)));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver_off)));
         marker4.setAnchor(0.5f, 0.5f);
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
                 .target(sydney)
@@ -849,10 +868,9 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     if(addressObj.getAddressLine(i)!=null)
                         addressText=addressText+addressObj.getAddressLine(i)+"\n";
                 }
-               // showMapData();
+                showMapData();
             }
             txtAdd1.setText(addressText);
-            //txtAdd2.setText(locationObj.getCity());
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                 //showToast(getString(R.string.address_found));
